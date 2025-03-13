@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Todo Uygulaması
 
-## Getting Started
+Next.js ve Supabase ile oluşturulmuş basit bir todo uygulaması. Kullanıcılar kayıt olabilir, giriş yapabilir ve kendi todo listelerini yönetebilirler.
 
-First, run the development server:
+## Özellikler
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Kullanıcı kimlik doğrulama (kayıt olma, giriş yapma, çıkış yapma)
+- Todo ekleme, silme ve tamamlandı olarak işaretleme
+- Gerçek zamanlı güncellemeler
+- Duyarlı tasarım
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Teknolojiler
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [Next.js](https://nextjs.org/) - React framework
+- [Supabase](https://supabase.io/) - Backend hizmetleri (kimlik doğrulama, veritabanı)
+- [Tailwind CSS](https://tailwindcss.com/) - Stil
+- [Shadcn UI](https://ui.shadcn.com/) - UI bileşenleri
+- [React Hook Form](https://react-hook-form.com/) - Form yönetimi
+- [Zod](https://zod.dev/) - Form doğrulama
+- [Sonner](https://sonner.emilkowal.ski/) - Toast bildirimleri
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Kurulum
 
-## Learn More
+1. Repoyu klonlayın:
+   ```bash
+   git clone https://github.com/kullaniciadi/todo-example.git
+   cd todo-example
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. Bağımlılıkları yükleyin:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. `.env.local` dosyasını oluşturun:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. Supabase projenizde aşağıdaki tabloyu oluşturun:
+   ```sql
+   CREATE TABLE todos (
+     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+     user_id UUID REFERENCES auth.users(id) NOT NULL,
+     task TEXT NOT NULL,
+     is_complete BOOLEAN DEFAULT FALSE,
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+   );
 
-## Deploy on Vercel
+   -- RLS politikaları
+   ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
+   
+   CREATE POLICY "Kullanıcılar kendi todo'larını görebilir"
+     ON todos FOR SELECT
+     USING (auth.uid() = user_id);
+   
+   CREATE POLICY "Kullanıcılar kendi todo'larını ekleyebilir"
+     ON todos FOR INSERT
+     WITH CHECK (auth.uid() = user_id);
+   
+   CREATE POLICY "Kullanıcılar kendi todo'larını güncelleyebilir"
+     ON todos FOR UPDATE
+     USING (auth.uid() = user_id);
+   
+   CREATE POLICY "Kullanıcılar kendi todo'larını silebilir"
+     ON todos FOR DELETE
+     USING (auth.uid() = user_id);
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Uygulamayı başlatın:
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+6. Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresine gidin.
+
+## Lisans
+
+MIT
