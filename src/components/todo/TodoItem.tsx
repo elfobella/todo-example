@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -27,8 +26,9 @@ export default function TodoItem({
     setIsUpdating(true);
     try {
       onUpdate(id, !is_complete);
-    } catch (error: any) {
-      toast.error(error.message || "Görev güncellenirken bir hata oluştu.");
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Görev güncellenirken bir hata oluştu.";
+      toast.error(errorMessage);
     } finally {
       setIsUpdating(false);
     }
@@ -38,8 +38,9 @@ export default function TodoItem({
     setIsDeleting(true);
     try {
       onDelete(id);
-    } catch (error: any) {
-      toast.error(error.message || "Görev silinirken bir hata oluştu.");
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Görev silinirken bir hata oluştu.";
+      toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
     }

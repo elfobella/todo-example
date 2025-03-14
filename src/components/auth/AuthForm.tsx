@@ -82,8 +82,9 @@ export default function AuthForm() {
         if (error) throw error;
         toast.success("Kayıt başarılı! E-posta adresinizi kontrol edin.");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Bir hata oluştu.");
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Bir hata oluştu.";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

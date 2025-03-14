@@ -55,9 +55,10 @@ export default function TodoList() {
       if (isComponentMountedRef.current) {
         setTodos(data || []);
       }
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       if (isComponentMountedRef.current) {
-        toast.error(error.message || "Görevler yüklenirken bir hata oluştu.");
+        const errorMessage = error instanceof Error ? error.message : "Görevler yüklenirken bir hata oluştu.";
+        toast.error(errorMessage);
       }
     } finally {
       if (isComponentMountedRef.current) {
@@ -227,11 +228,12 @@ export default function TodoList() {
       // Gerçek zamanlı abonelik zaten yeni todo'yu ekleyecek,
       // bu nedenle burada bir şey yapmamıza gerek yok
       toast.success("Görev başarıyla eklendi!");
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       // Hata durumunda geçici todo'yu kaldır
       setTodos((currentTodos) => currentTodos.filter(todo => todo.id !== tempId));
       setNewTask(taskToAdd); // Input'a eski değeri geri koy
-      toast.error(error.message || "Görev eklenirken bir hata oluştu.");
+      const errorMessage = error instanceof Error ? error.message : "Görev eklenirken bir hata oluştu.";
+      toast.error(errorMessage);
     } finally {
       setIsAddingTodo(false);
       // İşlem tamamlandıktan sonra input'a focus ol
@@ -249,8 +251,9 @@ export default function TodoList() {
       // Optimistik UI güncellemesi
       setTodos(todos.filter((todo) => todo.id !== id));
       toast.success("Görev başarıyla silindi!");
-    } catch (error: any) {
-      toast.error(error.message || "Görev silinirken bir hata oluştu.");
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Görev silinirken bir hata oluştu.";
+      toast.error(errorMessage);
     }
   };
 
@@ -270,14 +273,15 @@ export default function TodoList() {
 
       if (error) throw error;
       toast.success("Görev başarıyla güncellendi!");
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       // Hata durumunda UI'ı eski haline getir
       setTodos(
         todos.map((todo) =>
           todo.id === id ? { ...todo, is_complete: !is_complete } : todo
         )
       );
-      toast.error(error.message || "Görev güncellenirken bir hata oluştu.");
+      const errorMessage = error instanceof Error ? error.message : "Görev güncellenirken bir hata oluştu.";
+      toast.error(errorMessage);
     }
   };
 
@@ -286,8 +290,9 @@ export default function TodoList() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       toast.success("Başarıyla çıkış yapıldı!");
-    } catch (error: any) {
-      toast.error(error.message || "Çıkış yapılırken bir hata oluştu.");
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Çıkış yapılırken bir hata oluştu.";
+      toast.error(errorMessage);
     }
   };
 
@@ -305,7 +310,7 @@ export default function TodoList() {
   };
 
   // Kullanıcının baş harflerini alma
-  const getUserInitials = (user: any) => {
+  const getUserInitials = (user: { user_metadata?: { name?: string }, email?: string } | null) => {
     if (!user) return '?';
     
     if (user.user_metadata?.name) {
