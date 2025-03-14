@@ -129,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         authListener.subscription.unsubscribe();
       }
     };
-  }, []); // Sadece bir kez çalıştır
+  }, [session]);
 
   // Context değerini memoize et
   const contextValue = useMemo(() => ({
@@ -137,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     isLoading,
     refreshSession,
-  }), [user, session, isLoading, refreshSession, refreshCount]);
+  }), [user, session, isLoading, refreshSession]);
 
   return (
     <AuthContext.Provider value={contextValue}>

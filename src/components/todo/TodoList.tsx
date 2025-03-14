@@ -215,7 +215,7 @@ export default function TodoList() {
     setNewTask("");
 
     try {
-      const { data, error } = await supabase.from("todos").insert([
+      const { error } = await supabase.from("todos").insert([
         {
           task: taskToAdd,
           is_complete: false,
