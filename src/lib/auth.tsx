@@ -25,7 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [refreshCount, setRefreshCount] = useState(0);
 
   // useCallback ile refreshSession fonksiyonunu memoize ediyoruz
   const refreshSession = useCallback(async () => {
@@ -53,8 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
       setIsInitialized(true);
-      // Yenileme sayacını artır
-      setRefreshCount(prev => prev + 1);
     }
   }, [isLoading, isInitialized]);
 
